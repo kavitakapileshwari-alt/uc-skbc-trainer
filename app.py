@@ -9,10 +9,11 @@ import base64
 # Initialize Database
 init_db()
 
-# Pull credentials securely from the Streamlit Cloud Dashboard settings
-CLIENT_ID = st.secrets.get("GOOGLE_CLIENT_ID", "")
-CLIENT_SECRET = st.secrets.get("GOOGLE_CLIENT_SECRET", "")
-REDIRECT_URI = st.secrets.get("REDIRECT_URI", "http://localhost:8501")
+# --- FIXED CREDENTIALS (IMMUNE TO TEXT-BOX WRAPPING BUGS) ---
+CLIENT_ID = "727998624034-1nhqnq43t1747qkfo919ar1r28prnspo.apps.googleusercontent.com"
+CLIENT_SECRET = "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"
+REDIRECT_URI = "https://uc-skbc-trainer-q5e2s3rhzxldhdaaw8eqmu.streamlit.app"
+
 AUTHORIZE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 REVOKE_URL = "https://oauth2.googleapis.com/revoke"
@@ -24,15 +25,12 @@ if "auth" not in st.session_state:
     st.title("🔒 UrbanCompany Agent Portal")
     st.write("Please sign in using your official corporate account to proceed.")
     
-    if CLIENT_ID == "":
-        st.warning("Google Auth credentials are not set up yet. Please complete the setup in Streamlit Secrets.")
-    else:
-        oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, TOKEN_URL, REVOKE_URL)
-        result = oauth2.authorize_button("Sign in with Google", redirect_uri=REDIRECT_URI, scope="openid email profile")
-        
-        if result and "token" in result:
-            st.session_state["auth"] = result["token"]
-            st.rerun()
+    oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, TOKEN_URL, REVOKE_URL)
+    result = oauth2.authorize_button("Sign in with Google", redirect_uri=REDIRECT_URI, scope="openid email profile")
+    
+    if result and "token" in result:
+        st.session_state["auth"] = result["token"]
+        st.rerun()
 else:
     # Read the secure token sent back by Google to find the email address
     payload = st.session_state["auth"]["id_token"].split(".")[1]
