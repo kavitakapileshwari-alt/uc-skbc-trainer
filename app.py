@@ -12,11 +12,14 @@ CORRECT_PASSWORD = "UC-TRAINER-2026"
 
 # --- LIVE GOOGLE SHEETS CONNECTION CONFIG ---
 def get_google_sheet():
-    scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+    # Added the required Drive scope so gspread can search for files by their text title
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
     secret_credentials = json.loads(st.secrets["GCP_JSON"])
     creds = Credentials.from_service_account_info(secret_credentials, scopes=scopes)
     client = gspread.authorize(creds)
-    # This dynamically searches your Google Drive for the sheet you shared
     return client.open("UC Trainer Database").sheet1
 
 # --- BULLETPROOF LOGIN FLOW ---
