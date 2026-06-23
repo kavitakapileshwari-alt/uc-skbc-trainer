@@ -1,50 +1,35 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from streamlit_oauth import OAuth2Component
 from database import init_db, sqlite3, DB_NAME
-import json
-import base64
 
 # Initialize Database
 init_db()
 
-# --- FIXED CREDENTIALS (IMMUNE TO TEXT-BOX WRAPPING BUGS) ---
-CLIENT_ID = "727998624034-1nhqnq43t1747qkfo919ar1r28prnspo.apps.googleusercontent.com"
-CLIENT_SECRET = "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"
-REDIRECT_URI = "https://uc-skbc-trainer-q5e2s3rhzxldhdaaw8eqmu.streamlit.app"
-
-AUTHORIZE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
-TOKEN_URL = "https://oauth2.googleapis.com/token"
-REVOKE_URL = "https://oauth2.googleapis.com/revoke"
-
 st.set_page_config(page_title="UrbanCompany SKBC Trainer", layout="wide")
 
-# --- LIVE GOOGLE AUTHENTICATION FLOW ---
-if "auth" not in st.session_state:
-    st.title("🔒 UrbanCompany Agent Portal")
-    st.write("Please sign in using your official corporate account to proceed.")
-    
-    oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, TOKEN_URL, REVOKE_URL)
-    result = oauth2.authorize_button("Sign in with Google", redirect_uri=REDIRECT_URI, scope="openid email profile")
-    
-    if result and "token" in result:
-        st.session_state["auth"] = result["token"]
-        st.rerun()
-else:
-    # Read the secure token sent back by Google to find the email address
-    payload = st.session_state["auth"]["id_token"].split(".")[1]
-    payload += "=" * ((4 - len(payload) % 4) % 4)
-    user_info = json.loads(base64.b64decode(payload).decode("utf-8"))
-    user_email = user_info.get("email", "").strip().lower()
+# Hardcoded team password so you never have to deal with settings dashboards
+CORRECT_PASSWORD = "UC-TRAINER-2026"
 
-    # Domain Guardrail: Hard block any email that is not UrbanCompany
-    if not user_email.endswith("@urbancompany.com"):
-        st.error("❌ Access Denied. This system is strictly restricted to @urbancompany.com employee accounts.")
-        if st.button("Log Out"):
-            del st.session_state["auth"]
+# --- BULLETPROOF LOGIN FLOW ---
+if "authenticated" not in st.session_state:
+    st.title("🚀 UrbanCompany Agent Portal")
+    st.write("Please enter your official corporate email and team password to access the trainer.")
+    
+    email_input = st.text_input("Corporate Email (@urbancompany.com / @urbanclap.com):").strip().lower()
+    password_input = st.text_input("Team Password:", type="password")
+    
+    if st.button("Log In"):
+        if not (email_input.endswith("@urbancompany.com") or email_input.endswith("@urbanclap.com")):
+            st.error("❌ Access Denied. You must use an official @urbancompany.com or @urbanclap.com email address.")
+        elif password_input != CORRECT_PASSWORD:
+            st.error("❌ Incorrect team password. Please check with your team lead.")
+        else:
+            st.session_state["authenticated"] = True
+            st.session_state["user_email"] = email_input
             st.rerun()
-        st.stop()
+else:
+    user_email = st.session_state["user_email"]
 
     # --- PORTAL INTERFACE ---
     st.sidebar.title("UC SKBC Trainer")
@@ -53,7 +38,8 @@ else:
     menu = st.sidebar.radio("Go To:", ["Voice Simulator", "My Performance", "Team Leaderboard"])
     
     if st.sidebar.button("Log Out"):
-        del st.session_state["auth"]
+        del st.session_state["authenticated"]
+        del st.session_state["user_email"]
         st.rerun()
 
     if menu == "Voice Simulator":
