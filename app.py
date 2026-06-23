@@ -46,9 +46,9 @@ else:
         st.title("🎧 Live Agent Voice Sandbox")
         st.write("Click the button below to launch your dedicated call simulator interface.")
         
-        lyzr_url = "https://studio.lyzr.ai/voice-new-create/6a3a4d10222200aea16a5a7fa?tab=playground"
+        # Fixed back to your original 24-character ID
+        lyzr_url = "https://studio.lyzr.ai/voice-new-create/6a3a4d1022200aea16a5a7fa?tab=playground"
         
-        # This replaces the broken frame with a direct launch button
         st.link_button("🎙️ Start Live Voice Simulation Call", lyzr_url, use_container_width=True)
         
         st.info("💡 Note: Ensure you allow browser microphone access when the simulation tab opens.")
