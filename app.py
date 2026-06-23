@@ -12,7 +12,6 @@ CORRECT_PASSWORD = "UC-TRAINER-2026"
 
 # --- LIVE GOOGLE SHEETS CONNECTION CONFIG ---
 def get_google_sheet():
-    # Added the required Drive scope so gspread can search for files by their text title
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive"
@@ -63,20 +62,19 @@ else:
         st.info("💡 Note: Ensure you allow browser microphone access when the simulation tab opens.")
         
         st.write("---")
-        # Direct Logging form so trainers or agents can track scores manually after a simulator run
         st.subheader("📝 Log Simulation Results")
+        
         with st.form("score_form", clear_on_submit=True):
             score = st.slider("Overall Score Achieved:", min_value=0, max_value=100, value=85)
             submit_button = st.form_submit_button("Submit Evaluation Score to Database")
             
-           if submit_button:
+            if submit_button:
                 try:
                     sheet = get_google_sheet()
                     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     sheet.append_row([now, user_email, score])
                     st.success("🎯 Score logged successfully! Check your trends on the Performance tab.")
                 except Exception as e:
-                    # Safety net: If the error contains '200', it actually succeeded perfectly!
                     if "200" in str(e):
                         st.success("🎯 Score logged successfully! Check your trends on the Performance tab.")
                     else:
@@ -92,7 +90,6 @@ else:
                 st.info("No practice data tracked in the Google Sheet yet. Log a score on the Simulator page to start!")
             else:
                 df = pd.DataFrame(records)
-                # Filter specifically for the logged-in agent
                 df_user = df[df['agent_email'] == user_email]
                 
                 if df_user.empty:
@@ -117,7 +114,6 @@ else:
                 st.info("No history recorded in the cloud database yet.")
             else:
                 df = pd.DataFrame(records)
-                # Construct aggregate stats for the team leaderboard group
                 leaderboard = df.groupby('agent_email').agg(
                     Top_Score=('overall_score', 'max'),
                     Total_Runs=('overall_score', 'count')
