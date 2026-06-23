@@ -52,7 +52,7 @@ else:
         st.link_button("🎙️ Start Live Voice Simulation Call", lyzr_url, use_container_width=True)
         
         st.info("💡 Note: Ensure you allow browser microphone access when the simulation tab opens.")
-
+        
     elif menu == "My Performance":
         st.title("📈 Performance Trends")
         conn = sqlite3.connect(DB_NAME)
