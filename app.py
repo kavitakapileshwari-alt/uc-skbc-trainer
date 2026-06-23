@@ -45,7 +45,7 @@ else:
     if menu == "Voice Simulator":
         st.title("🎧 Live Agent Voice Sandbox")
         st.write("Interact with the simulation below. Ensure your microphone permissions are allowed.")
-        lyzr_url = "https://studio.lyzr.ai/" # Replace with your deployment widget link
+        lyzr_url = "https://studio.lyzr.ai/voice-new-create/6a3a4d1022200aea16a5a7fa?tab=playground"
         st.components.v1.iframe(lyzr_url, height=600, scrolling=True)
 
     elif menu == "My Performance":
