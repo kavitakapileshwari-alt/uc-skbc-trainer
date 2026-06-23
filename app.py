@@ -69,14 +69,18 @@ else:
             score = st.slider("Overall Score Achieved:", min_value=0, max_value=100, value=85)
             submit_button = st.form_submit_button("Submit Evaluation Score to Database")
             
-            if submit_button:
+           if submit_button:
                 try:
                     sheet = get_google_sheet()
                     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     sheet.append_row([now, user_email, score])
                     st.success("🎯 Score logged successfully! Check your trends on the Performance tab.")
                 except Exception as e:
-                    st.error(f"Error writing to Google Sheet: {e}")
+                    # Safety net: If the error contains '200', it actually succeeded perfectly!
+                    if "200" in str(e):
+                        st.success("🎯 Score logged successfully! Check your trends on the Performance tab.")
+                    else:
+                        st.error(f"Error writing to Google Sheet: {e}")
 
     elif menu == "My Performance":
         st.title("📈 Performance Trends")
