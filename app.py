@@ -111,7 +111,7 @@ else:
         st.subheader("📝 Log Simulation Results")
         
         with st.form("score_form", clear_on_submit=True):
-            score = st.slider("Overall Score Achieved:", min_value=0, max_value=100, value=0)
+            score = st.slider("Overall Score Achieved:", min_value=0, max_value=100, value=85)
             submit_button = st.form_submit_button("Submit Evaluation Score to Database")
             
             if submit_button:
